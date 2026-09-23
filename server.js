@@ -1,0 +1,12 @@
+const express=require('express');
+const app=express();
+const PORT=process.env.PORT||10000;
+app.use(express.json());
+const users=[{id:1,name:'Demo Student',email:'student@demo.local',password:'Student@123',role:'STUDENT'},{id:2,name:'Demo Teacher',email:'teacher@demo.local',password:'Teacher@123',role:'TEACHER'}];
+const attendance=[{id:1,date:'2026-09-22',subject:'DevOps',studentId:1,status:'PRESENT'},{id:2,date:'2026-09-23',subject:'Database',studentId:1,status:'PRESENT'},{id:3,date:'2026-09-24',subject:'DevOps',studentId:1,status:'ABSENT'}];
+app.use(express.static('public'));
+app.get('/health',(req,res)=>res.json({status:'ok',service:'smart-attendance'}));
+app.post('/api/login',(req,res)=>{const {email,password}=req.body||{};const user=users.find(u=>u.email===email&&u.password===password);if(!user)return res.status(401).json({message:'Invalid email or password'});const {password:_,...safe}=user;res.json(safe)});
+app.get('/api/attendance',(req,res)=>res.json(attendance.filter(a=>a.studentId===Number(req.query.studentId||1))));
+app.post('/api/attendance',(req,res)=>{const {date,subject,status}=req.body||{};if(!date||!subject||!['PRESENT','ABSENT'].includes(status))return res.status(400).json({message:'Invalid attendance'});attendance.push({id:attendance.length+1,date,subject,studentId:1,status});res.status(201).json({message:'Attendance saved'})});
+app.listen(PORT,'0.0.0.0',()=>console.log('Smart Attendance running on port '+PORT));

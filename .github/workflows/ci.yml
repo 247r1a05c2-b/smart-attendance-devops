@@ -1,28 +1,18 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 jobs:
-  test-build:
+  test-and-build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: attendance, POSTGRES_USER: attendance}
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U attendance -d attendance"
-          --health-interval 10s --health-timeout 5s --health-retries 5
-    env:
-      DATABASE_URL: postgresql://attendance:postgres@localhost:5432/attendance?schema=public
-      JWT_SECRET: ci_secret
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 20}
-      - name: Backend
-        working-directory: backend
-        run: npm install && npx prisma generate && npm run build && npm test
-      - name: Frontend
-        working-directory: frontend
-        run: npm install && npm run build && npm test
-      - name: Compose config
-        run: docker compose config
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: docker build -t smart-attendance .

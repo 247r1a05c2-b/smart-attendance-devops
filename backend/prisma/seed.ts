@@ -6,11 +6,13 @@ const prisma = new PrismaClient();
 async function main() {
   const hash = (p: string) => bcrypt.hashSync(p, 10);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@demo.local' }, update: {},
+    where: { email: 'admin@demo.local' },
+    update: { passwordHash: hash('Admin@123'), active: true },
     create: { email: 'admin@demo.local', passwordHash: hash('Admin@123'), name: 'System Admin', role: Role.ADMIN }
   });
   const teacherUser = await prisma.user.upsert({
-    where: { email: 'teacher@demo.local' }, update: {},
+    where: { email: 'teacher@demo.local' },
+    update: { passwordHash: hash('Teacher@123'), active: true },
     create: { email: 'teacher@demo.local', passwordHash: hash('Teacher@123'), name: 'Demo Teacher', role: Role.TEACHER }
   });
   const teacher = await prisma.teacher.upsert({
@@ -18,7 +20,8 @@ async function main() {
     create: { userId: teacherUser.id, employeeNo: 'T001', department: 'Computer Science' }
   });
   const studentUser = await prisma.user.upsert({
-    where: { email: 'student@demo.local' }, update: {},
+    where: { email: 'student@demo.local' },
+    update: { passwordHash: hash('Student@123'), active: true },
     create: { email: 'student@demo.local', passwordHash: hash('Student@123'), name: 'Demo Student', role: Role.STUDENT }
   });
   const student = await prisma.student.upsert({

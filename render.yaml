@@ -26,10 +26,7 @@ services:
     dockerContext: ./frontend
     envVars:
       - key: BACKEND_URL
-        fromService:
-          name: smart-attendance-backend
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://smart-attendance-backend-lzmx.onrender.com
 
 databases:
   - name: smart-attendance-db

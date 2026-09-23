@@ -26,7 +26,7 @@ services:
     dockerContext: ./frontend
     envVars:
       - key: VITE_API_URL
-        value: /api
+        value: https://smart-attendance-backend.onrender.com/api
 
 databases:
   - name: smart-attendance-db

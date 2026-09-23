@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  student      Student?
+  teacher      Teacher?
+  auditLogs    AuditLog[]
+}
+
+model Student {
+  id          Int          @id @default(autoincrement())
+  userId      Int          @unique
+  rollNo      String       @unique
+  department  String
+  semester    Int
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+  attendance  Attendance[]
+}
+
+model Teacher {
+  id          Int          @id @default(autoincrement())
+  userId      Int          @unique
+  employeeNo  String       @unique
+  department  String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects    Subject[]
+  attendance  Attendance[]
+}
+
+model Class {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  department  String
+  semester    Int
+  subjects    Subject[]
+  enrollments Enrollment[]
+  attendance  Attendance[]
+}
+
+model Subject {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  name        String
+  classId     Int
+  teacherId   Int
+  class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+  attendance  Attendance[]
+}
+
+model Enrollment {
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  classId   Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class     Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  @@unique([studentId, classId])
+}
+
+model Attendance {
+  id        Int              @id @default(autoincrement())
+  studentId Int
+  classId   Int
+  subjectId Int
+  teacherId Int
+  date      DateTime
+  status    AttendanceStatus
+  student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class     Class             @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject   Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher   Teacher          @relation(fields: [teacherId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  @@unique([studentId, subjectId, date])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}

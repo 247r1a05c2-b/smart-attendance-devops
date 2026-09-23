@@ -78,13 +78,13 @@ These are LAB demo credentials stored in the sample application.
 
 The GitHub Actions workflow runs on pushes and pull requests to `main`. It installs dependencies, runs tests, and builds the Docker image.
 
-Render is connected to the `main` branch. When a new commit is pushed, Render can automatically build and deploy the Docker service. Render also supports waiting for CI checks before deployment. citeturn0search3turn0search2
+Render is connected to the `main` branch. When a new commit is pushed, Render can automatically build and deploy the Docker service. Render also supports waiting for CI checks before deployment.
 
 ## Monitoring
 
 - `GET /health` — lightweight service health endpoint.
 - `GET /api/devops/status` — uptime, request count, memory, Node version, deployment commit and pipeline stages.
-- Render uses the configured `/health` path for HTTP health checks. A 2xx/3xx response is considered healthy. citeturn0search1
+- Render uses the configured `/health` path for HTTP health checks. A 2xx/3xx response is considered healthy.
 
 ## Important LAB note
 
@@ -92,7 +92,7 @@ This simplified version intentionally uses **in-memory data** instead of Postgre
 
 ## Deployment
 
-The included `Dockerfile` and `render.yaml` are configured for a Render Docker web service. Render web services must listen on `0.0.0.0` and normally use the `PORT` environment variable; this app does both. citeturn0search0
+The included `Dockerfile` and `render.yaml` are configured for a Render Docker web service. Render web services must listen on `0.0.0.0` and normally use the `PORT` environment variable; this app does both.
 
 ## LAB demonstration flow
 

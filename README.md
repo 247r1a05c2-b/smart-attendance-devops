@@ -1,67 +1,70 @@
-# Smart Attendance Management System — DevOps LAB Project
+# Smart Attendance Management System — DevOps LAB
 
-## Objective
+A simple college LAB project that demonstrates the DevOps lifecycle using a Smart Attendance application.
 
-Build a simple attendance web application and demonstrate the complete DevOps lifecycle:
-
-**Plan → Develop → Git → Test → Docker → CI → CD → Deploy → Monitor**
-
-## Application
+## Features
 
 ### Student
-- Login
-- Attendance percentage
-- Subject-wise attendance
+- Login and dashboard
+- Attendance percentage and status
+- Subject-wise attendance analysis
+- Attendance trend graph
+- Low-attendance warning below 75%
 - Attendance history
-- Attendance trend
+- CSV export
 
 ### Teacher
 - Login
-- Assigned subjects
-- Select date
-- Mark PRESENT / ABSENT / LATE / EXCUSED
-- Save attendance
+- Assigned class dashboard
+- Mark PRESENT / ABSENT attendance
+- Student search/filter while marking attendance
+- Class-wise analytics
+- Low-attendance alerts
+- CSV export
 
 ### Admin
-- Login
-- Student/teacher/class/subject counts
-- Student list
+- Dashboard with attendance analytics
+- Add/remove students
+- Add/remove teachers
+- Create/remove classes
+- Search/filter lists
+- Low-attendance alerts
+- Audit log
+- Full attendance CSV export
+- DevOps monitoring dashboard
 
-## Technology
+## DevOps concepts demonstrated
 
-| Layer | Technology |
+**Plan → Develop → Git → Test → Docker → CI → CD → Deploy → Monitor**
+
+| Concept | Implementation |
 |---|---|
-| Frontend | React + Vite + TypeScript |
-| Backend | Node.js + Express + TypeScript |
-| Database | PostgreSQL |
-| ORM | Prisma |
-| Authentication | JWT + bcrypt |
-| Containers | Docker + Docker Compose |
 | Source control | GitHub |
 | CI | GitHub Actions |
-| CD | GitHub Actions + deployment platform |
-| Deployment | Railway or another Docker host |
-| Monitoring | /health and /metrics |
+| Testing | Node.js built-in test runner |
+| Containerization | Docker |
+| CD / deployment | Render |
+| Health check | `/health` |
+| Runtime monitoring | `/api/devops/status` |
+| Application | Node.js + Express + HTML/CSS/JS |
 
-## Local setup
-
-### Docker — recommended for the LAB
+## Local run
 
 ```bash
-docker compose up --build
+npm install
+npm start
 ```
 
-Open `http://localhost`.
+Open `http://localhost:10000`.
 
-Health check:
+Docker:
 
+```bash
+docker build -t smart-attendance .
+docker run -p 10000:10000 smart-attendance
 ```
-http://localhost:4000/health
-```
 
-The first startup creates the database tables and demo data.
-
-### Demo accounts
+## Demo accounts
 
 | Role | Email | Password |
 |---|---|---|
@@ -69,139 +72,46 @@ The first startup creates the database tables and demo data.
 | Teacher | teacher@demo.local | Teacher@123 |
 | Student | student@demo.local | Student@123 |
 
-These are demo credentials only. Change them before any real deployment.
+These are LAB demo credentials stored in the sample application.
 
-## Run without Docker
+## CI/CD
 
-Start PostgreSQL and create a database named `attendance`.
+The GitHub Actions workflow runs on pushes and pull requests to `main`. It installs dependencies, runs tests, and builds the Docker image.
 
-Backend:
-
-```bash
-cd backend
-npm install
-npx prisma generate
-npx prisma db push
-npm run seed
-npm run dev
-```
-
-Frontend in another terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## DevOps workflow
-
-```
-Developer
-   |
-   | git push
-   v
-GitHub
-   |
-   v
-GitHub Actions
-   |
-   +--> Install
-   +--> Test
-   +--> Build
-   +--> Docker build
-   |
-   v
-Container Registry
-   |
-   v
-Deployment Platform
-   |
-   v
-Live Smart Attendance Website
-   |
-   v
-Health Check / Monitoring
-```
-
-## CI
-
-The workflow in `.github/workflows/ci.yml` runs automatically on pushes and pull requests.
-
-It:
-1. Starts PostgreSQL.
-2. Installs backend dependencies.
-3. Generates Prisma client.
-4. Builds backend.
-5. Runs backend tests.
-6. Installs frontend dependencies.
-7. Builds frontend.
-8. Runs frontend tests.
-9. Validates Docker Compose.
-
-## CD
-
-The workflow in `.github/workflows/cd.yml` builds Docker images and publishes them to GitHub Container Registry (GHCR).
-
-For a simple LAB deployment, connect the GitHub repository to Railway and configure the frontend/backend/database services. See `docs/DEPLOYMENT.md`.
+Render is connected to the `main` branch. When a new commit is pushed, Render can automatically build and deploy the Docker service. Render also supports waiting for CI checks before deployment. citeturn0search3turn0search2
 
 ## Monitoring
 
-Backend endpoints:
+- `GET /health` — lightweight service health endpoint.
+- `GET /api/devops/status` — uptime, request count, memory, Node version, deployment commit and pipeline stages.
+- Render uses the configured `/health` path for HTTP health checks. A 2xx/3xx response is considered healthy. citeturn0search1
 
-```
-GET /health
-GET /metrics
-```
+## Important LAB note
 
-`/health` confirms that the API can reach PostgreSQL.
+This simplified version intentionally uses **in-memory data** instead of PostgreSQL so the project stays easy to understand and deploy for a college LAB. Data resets when the service restarts or redeploys. Render services use an ephemeral filesystem by default, so persistent application data requires a datastore or persistent storage. citeturn0search3
 
-`/metrics` exposes a minimal Prometheus-compatible metric.
+## Deployment
 
-## Git demonstration
+The included `Dockerfile` and `render.yaml` are configured for a Render Docker web service. Render web services must listen on `0.0.0.0` and normally use the `PORT` environment variable; this app does both. citeturn0search0
+
+## LAB demonstration flow
+
+1. Login as Student and show subject analysis, trend graph, low-attendance warning and CSV export.
+2. Login as Teacher and mark attendance.
+3. Open Teacher Analytics.
+4. Login as Admin and show counts, subject analytics, search/filter, audit log and CSV export.
+5. Open DevOps Monitor and show uptime, memory, request count and pipeline stages.
+6. Show GitHub Actions passing.
+7. Show Dockerfile and Docker image build.
+8. Show Render deployment and `/health`.
+
+## Git example
 
 ```bash
-git clone https://github.com/247r1a05c2-b/smart-attendance-devops.git
-cd smart-attendance-devops
-git checkout -b feature/dashboard
-# make a change
+git checkout -b feature/attendance-analytics
 git add .
-git commit -m "Add dashboard improvement"
-git push -u origin feature/dashboard
+git commit -m "Add attendance analytics and DevOps monitoring"
+git push -u origin feature/attendance-analytics
 ```
 
-Create a Pull Request on GitHub. After review, merge to `main`.
-
-## LAB demonstration
-
-1. Show student login and attendance dashboard.
-2. Show teacher marking attendance.
-3. Show PostgreSQL-backed data.
-4. Run Docker Compose.
-5. Show GitHub repository.
-6. Show passing GitHub Actions CI.
-7. Show Docker images built by CD.
-8. Show deployed application.
-9. Open `/health`.
-
-## DevOps concepts demonstrated
-
-- Version control
-- Branching
-- Pull requests
-- Automated testing
-- Continuous Integration
-- Containerization
-- Container registry
-- Continuous Delivery/Deployment
-- Environment variables
-- Database service
-- Health checks
-- Basic monitoring
-- Documentation
-
-## Security
-
-Never commit `.env`, passwords, API tokens, or private keys.
-
-Use repository/deployment secrets for production credentials.
+Open a Pull Request and merge to `main` after CI passes.

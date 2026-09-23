@@ -3,8 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ARG BACKEND_URL=/api
-ENV VITE_API_URL=$BACKEND_URL/api
+ENV VITE_API_URL=https://smart-attendance-backend-lzmx.onrender.com/api
 RUN npm run build
 
 FROM nginx:1.27-alpine

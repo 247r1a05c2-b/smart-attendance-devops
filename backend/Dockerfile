@@ -11,9 +11,9 @@ RUN npm run build
 FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 COPY prisma ./prisma
 RUN npx prisma generate
 COPY --from=build /app/dist ./dist
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run seed && node dist/server.js"]
